@@ -59,10 +59,14 @@ module.exports = (uri, options = {}) => {
   // see https://github.com/cgiffard/node-simplecrawler#configuration
   crawler.initialPath = uri.pathname !== '' ? uri.pathname : '/';
   crawler.initialProtocol = uri.protocol.replace(':', '');
-
+  
+  var restrictToPath = uri.pathname;
+  if ( restrictToPath.includes( '.' ) ) {
+    restrictToPath = restrictToPath.substring( 0, restrictToPath.lastIndexOf( '/' ) + 1 );
+  }
   // restrict to subpages if path is provided
   crawler.addFetchCondition(parsedUrl => {
-    const initialURLRegex = new RegExp(`${uri.pathname}.*`);
+    const initialURLRegex = new RegExp(`${restrictToPath}.*`);
     return stringifyURL(parsedUrl).match(initialURLRegex);
   });
 
